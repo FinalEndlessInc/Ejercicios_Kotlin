@@ -52,15 +52,51 @@ interface Habilidades{
     }
 }
 
+interface Pasatiempos{
+    var actividad: String
+    var descripcion_actividad: String
+}
+
+interface Hobbies{
+    var hobbies: MutableList<Pasatiempos>
+    
+    fun agregar_hobbie(nuevo_hobbie: Pasatiempos){
+        hobbies.add(nuevo_hobbie)
+    }
+    
+    fun ver_hobbies(): String{
+        var lista_de_hobbies = "${hobbies.size}: "
+        for(hobbie in hobbies){
+            lista_de_hobbies = "${lista_de_hobbies}, ${hobbie.actividad}"
+        }
+        
+        return lista_de_hobbies
+    }
+}
+
 interface Cumbias{
     var estilo: String
     var bailando: Boolean
     
-    fun esta_bailando(estilo: String ,bailando: Boolean):String{
+    fun esta_bailando(estilo: estiloBaile):String{
         if(bailando){
-            return "Joer, que wen baile de ${estilo}"
+            return "Joer, que wen baile de ${estilo.estilo}"
         }else{
             return "Nah, este bebe no baila"
+        }
+    }
+}
+
+interface Gameplay{
+    var nombre_juego: String
+    var partidas_jugadas: Int
+    var partida_ganada: Boolean
+    
+    fun ganar_partida(partidas: BebeJugando): String{
+        if (partida_ganada){
+            return " esta jugando ${partidas.nombre_juego}, ya jugó ${partidas.partidas_jugadas} y ha ganado, yippie !"
+        }else{
+            return " esta jugando ${partidas.nombre_juego}, ya jugó ${partidas.partidas_jugadas} y perdió, que triste"
         }
     }
 }
@@ -71,20 +107,32 @@ class SuperPoder(
     override var descripcion: String?
 ): Habilidad {}
 
+class TiempoLibre(
+    override var actividad: String,
+    override var descripcion_actividad: String
+): Pasatiempos{}
+
 class estiloBaile(
     override var estilo: String,
     override var bailando: Boolean 
 ):Cumbias{}
 
-class Bebe(): Habilidades, Cumbias{ 
+class BebeJugando(
+    override var nombre_juego: String,
+    override var partidas_jugadas: Int,
+    override var partida_ganada: Boolean
+): Gameplay{}
+
+class Bebe(): Habilidades, Cumbias, Gameplay, Hobbies{ 
     override var capacidades: MutableList<Habilidad> = mutableListOf()
+    override var hobbies: MutableList<Pasatiempos> = mutableListOf()
+    
     override var estilo: String = ""
     override var bailando: Boolean = true
-}
-
-class Zorro(): Habilidades{ 
-    override var capacidades: MutableList<Habilidad> = mutableListOf()
     
+    override var nombre_juego: String = ""
+    override var partidas_jugadas: Int = 0
+    override var partida_ganada: Boolean = true
 }
 
 fun main() {
@@ -92,24 +140,28 @@ fun main() {
     val poder_2 = SuperPoder("Volar", true, "La habilidad de volar")
     val poder_3 = SuperPoder("SuperFuerza", true, "La capacidad de tener mucha fuerza")
     
+    val tiempo_libre1 = TiempoLibre("Jugar Fortnite", "creo que eso lo explica por si mismo")
+    val tiempo_libre2 = TiempoLibre("Caminar al cerro", "Se va a enfrentar nahuales como el abuelo")
+    val tiempo_libre3 = TiempoLibre("Dormir", "habilidad impresionante de dormir 8 horas seguidas")
+    
     val baile_1 = estiloBaile("Cumbia", true)
     
+    val juegando = BebeJugando("Team Fortress 2", 5, true)
+    
     val bebe = Bebe()
-    val zorito_de_firefox = Zorro()
     
     bebe.agregar_capacidad(poder)
     bebe.agregar_capacidad(poder_2)
     bebe.agregar_capacidad(poder_3)
     
+    bebe.agregar_hobbie(tiempo_libre1)
+    bebe.agregar_hobbie(tiempo_libre2)
+    bebe.agregar_hobbie(tiempo_libre3)
+    
     bebe.activar_capacidad(poder.nombre)
     
-    zorito_de_firefox.agregar_capacidad(poder)
-    zorito_de_firefox.agregar_capacidad(poder_2)
-    zorito_de_firefox.agregar_capacidad(poder_3)
-    
-    
-    
     println("Los poderes del bebe son ${bebe.descripcion()}")
-    println("Los poderes del zorro son ${zorito_de_firefox.descripcion()}")
     println("El bebe anda bailando? ${bebe.esta_bailando(baile_1)}")
+    println("El bebe gamer ${bebe.ganar_partida(juegando)}")
+    println("Los pasatiempos del bebe son ${bebe.ver_hobbies()}")
 }
